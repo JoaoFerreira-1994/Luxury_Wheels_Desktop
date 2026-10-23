@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+*.log
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+.git_flask_backup/
