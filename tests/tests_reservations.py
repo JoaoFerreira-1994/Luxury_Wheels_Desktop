@@ -2,7 +2,7 @@
 import unittest
 from unittest.mock import patch
 
-from models_old import create_reservation
+from models import create_reservation
 
 
 class TestReservations(unittest.TestCase):
