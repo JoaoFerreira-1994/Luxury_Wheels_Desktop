@@ -3,18 +3,18 @@ from datetime import datetime, timedelta
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
 # ----------------------------------------------------------------------------- USERS ----------------------------------------------------------------
 
-def create_user(name, email, password, role):
 
+def create_user(name, email, password, role):
     """Creates a new user and returns the generated ID."""
 
     conn = connect()
     try:
         password_hash = generate_password_hash(password)
 
-        cursor = conn.execute("""
+        cursor = conn.execute(
+            """
             INSERT INTO users (
                 name,
                 email,
@@ -22,12 +22,9 @@ def create_user(name, email, password, role):
                 role
             )
             VALUES (?, ?, ?, ?)
-        """, (
-            name,
-            email,
-            password_hash,
-            role
-        ))
+        """,
+            (name, email, password_hash, role),
+        )
 
         conn.commit()
         user_id = cursor.lastrowid
@@ -41,19 +38,15 @@ def create_user(name, email, password, role):
 
 
 def find_user_by_email(email):
-
     """Returns a user by email."""
 
     conn = connect()
     try:
 
-        user = conn.execute(
-            "SELECT * FROM users WHERE email = ?",
-            (email,)
-        ).fetchone()
+        user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
 
-
-        if user: return dict(user)
+        if user:
+            return dict(user)
 
         return None
     except Exception:
@@ -64,21 +57,22 @@ def find_user_by_email(email):
 
 
 def authenticate_user(email, password):
-
     """Authenticates a user using email and password."""
 
     user = find_user_by_email(email)
 
-    if not user: return None
-    if not check_password_hash(user["password"], password): return None
+    if not user:
+        return None
+    if not check_password_hash(user["password"], password):
+        return None
 
     return user
 
 
 # ----------------------------------------------------------------------------- VEHICLES ----------------------------------------------------------------
 
-def list_vehicles():
 
+def list_vehicles():
     """Returns all vehicles."""
 
     conn = connect()
@@ -93,18 +87,29 @@ def list_vehicles():
         conn.close()
 
 
-
-def create_vehicle(brand, model, license_plate, category, transmission,
-                   vehicle_type, capacity, image_path, daily_price,
-                   last_revision_date, next_revision_date,
-                   last_inspection_date, next_inspection_date,
-                   last_legalization_date, status):
-
+def create_vehicle(
+    brand,
+    model,
+    license_plate,
+    category,
+    transmission,
+    vehicle_type,
+    capacity,
+    image_path,
+    daily_price,
+    last_revision_date,
+    next_revision_date,
+    last_inspection_date,
+    next_inspection_date,
+    last_legalization_date,
+    status,
+):
     """Creates a new vehicle and returns the ID."""
 
     conn = connect()
     try:
-        cursor = conn.execute("""
+        cursor = conn.execute(
+            """
             INSERT INTO vehicles (
                 brand,
                 model,
@@ -123,23 +128,25 @@ def create_vehicle(brand, model, license_plate, category, transmission,
                 status
             )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            brand,
-            model,
-            license_plate,
-            category,
-            transmission,
-            vehicle_type,
-            capacity,
-            image_path,
-            daily_price,
-            last_revision_date,
-            next_revision_date,
-            last_inspection_date,
-            next_inspection_date,
-            last_legalization_date,
-            status
-        ))
+        """,
+            (
+                brand,
+                model,
+                license_plate,
+                category,
+                transmission,
+                vehicle_type,
+                capacity,
+                image_path,
+                daily_price,
+                last_revision_date,
+                next_revision_date,
+                last_inspection_date,
+                next_inspection_date,
+                last_legalization_date,
+                status,
+            ),
+        )
 
         conn.commit()
         vehicle_id = cursor.lastrowid
@@ -152,19 +159,17 @@ def create_vehicle(brand, model, license_plate, category, transmission,
         conn.close()
 
 
-
 def find_vehicle(vehicle_id):
-
     """Returns a vehicle by its ID."""
 
     conn = connect()
     try:
         vehicle = conn.execute(
-            "SELECT * FROM vehicles WHERE id = ?",
-            (vehicle_id,)
+            "SELECT * FROM vehicles WHERE id = ?", (vehicle_id,)
         ).fetchone()
 
-        if vehicle: return dict(vehicle)
+        if vehicle:
+            return dict(vehicle)
 
         return None
     except Exception:
@@ -174,17 +179,30 @@ def find_vehicle(vehicle_id):
         conn.close()
 
 
-def update_vehicle(vehicle_id, brand, model, license_plate, category,
-                   transmission, vehicle_type, capacity, image_path,
-                   daily_price, last_revision_date, next_revision_date,
-                   last_inspection_date, next_inspection_date,
-                   last_legalization_date, status):
-
+def update_vehicle(
+    vehicle_id,
+    brand,
+    model,
+    license_plate,
+    category,
+    transmission,
+    vehicle_type,
+    capacity,
+    image_path,
+    daily_price,
+    last_revision_date,
+    next_revision_date,
+    last_inspection_date,
+    next_inspection_date,
+    last_legalization_date,
+    status,
+):
     """Updates a vehicle."""
 
     conn = connect()
     try:
-        cursor = conn.execute("""
+        cursor = conn.execute(
+            """
             UPDATE vehicles
             SET brand = ?,
                 model = ?,
@@ -202,46 +220,25 @@ def update_vehicle(vehicle_id, brand, model, license_plate, category,
                 last_legalization_date = ?,
                 status = ?
             WHERE id = ?
-        """, (
-            brand,
-            model,
-            license_plate,
-            category,
-            transmission,
-            vehicle_type,
-            capacity,
-            image_path,
-            daily_price,
-            last_revision_date,
-            next_revision_date,
-            last_inspection_date,
-            next_inspection_date,
-            last_legalization_date,
-            status,
-            vehicle_id
-        ))
-
-        conn.commit()
-        affected_rows = cursor.rowcount
-
-        return affected_rows
-    except Exception:
-        conn.rollback()
-        raise
-    finally:
-        conn.close()
-
-
-
-def delete_vehicle(vehicle_id):
-
-    """Deletes a vehicle."""
-
-    conn = connect()
-    try:
-        cursor = conn.execute(
-            "DELETE FROM vehicles WHERE id = ?",
-            (vehicle_id,)
+        """,
+            (
+                brand,
+                model,
+                license_plate,
+                category,
+                transmission,
+                vehicle_type,
+                capacity,
+                image_path,
+                daily_price,
+                last_revision_date,
+                next_revision_date,
+                last_inspection_date,
+                next_inspection_date,
+                last_legalization_date,
+                status,
+                vehicle_id,
+            ),
         )
 
         conn.commit()
@@ -254,6 +251,25 @@ def delete_vehicle(vehicle_id):
     finally:
         conn.close()
 
+
+def delete_vehicle(vehicle_id):
+    """Deletes a vehicle."""
+
+    conn = connect()
+    try:
+        cursor = conn.execute("DELETE FROM vehicles WHERE id = ?", (vehicle_id,))
+
+        conn.commit()
+        affected_rows = cursor.rowcount
+
+        return affected_rows
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
 def vehicle_has_reservations(vehicle_id):
     """Checks if a vehicle has associated reservations."""
 
@@ -261,10 +277,8 @@ def vehicle_has_reservations(vehicle_id):
     try:
 
         reservation = conn.execute(
-            "SELECT id FROM reservations WHERE vehicle_id = ? LIMIT 1",
-            (vehicle_id,)
+            "SELECT id FROM reservations WHERE vehicle_id = ? LIMIT 1", (vehicle_id,)
         ).fetchone()
-
 
         return reservation is not None
     except Exception:
@@ -276,16 +290,13 @@ def vehicle_has_reservations(vehicle_id):
 
 # ----------------------------------------------------------------------------- CLIENTS ----------------------------------------------------------------
 
-def list_clients():
 
+def list_clients():
     """Returns all clients."""
 
     conn = connect()
     try:
-        clients = conn.execute(
-            "SELECT * FROM clients"
-        ).fetchall()
-
+        clients = conn.execute("SELECT * FROM clients").fetchall()
 
         return [dict(client) for client in clients]
     except Exception:
@@ -296,16 +307,13 @@ def list_clients():
 
 
 def find_client(client_id):
-
     """Returns a client by its ID."""
 
     conn = connect()
     try:
         client = conn.execute(
-            "SELECT * FROM clients WHERE id = ?",
-            (client_id,)
+            "SELECT * FROM clients WHERE id = ?", (client_id,)
         ).fetchone()
-
 
         if client:
             return dict(client)
@@ -317,15 +325,16 @@ def find_client(client_id):
     finally:
         conn.close()
 
-def create_client(name, nif, email, phone, address):
 
+def create_client(name, nif, email, phone, address):
     """Creates a new client."""
 
     conn = connect()
     try:
         created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        cursor = conn.execute("""
+        cursor = conn.execute(
+            """
             INSERT INTO clients (
                 name,
                 nif,
@@ -335,14 +344,9 @@ def create_client(name, nif, email, phone, address):
                 created_at
             )
             VALUES (?, ?, ?, ?, ?, ?)
-        """, (
-            name,
-            nif,
-            email,
-            phone,
-            address,
-            created_at
-        ))
+        """,
+            (name, nif, email, phone, address, created_at),
+        )
 
         conn.commit()
         client_id = cursor.lastrowid
@@ -354,13 +358,14 @@ def create_client(name, nif, email, phone, address):
     finally:
         conn.close()
 
-def update_client(client_id, name, nif, email, phone, address):
 
+def update_client(client_id, name, nif, email, phone, address):
     """Updates a client"""
 
     conn = connect()
     try:
-        cursor = conn.execute("""
+        cursor = conn.execute(
+            """
             UPDATE clients
             SET name = ?,
                 nif = ?,
@@ -368,33 +373,8 @@ def update_client(client_id, name, nif, email, phone, address):
                 phone = ?,
                 address = ?
             WHERE id = ?
-        """, (
-            name,
-            nif,
-            email,
-            phone,
-            address,
-            client_id
-        ))
-
-        conn.commit()
-        affected_rows = cursor.rowcount
-
-        return affected_rows
-    except Exception:
-        conn.rollback()
-        raise
-    finally:
-        conn.close()
-
-def delete_client(client_id):
-    """Deletes a client and returns the number of affected rows."""
-
-    conn = connect()
-    try:
-        cursor = conn.execute(
-            "DELETE FROM clients WHERE id = ?",
-            (client_id,)
+        """,
+            (name, nif, email, phone, address, client_id),
         )
 
         conn.commit()
@@ -407,6 +387,25 @@ def delete_client(client_id):
     finally:
         conn.close()
 
+
+def delete_client(client_id):
+    """Deletes a client and returns the number of affected rows."""
+
+    conn = connect()
+    try:
+        cursor = conn.execute("DELETE FROM clients WHERE id = ?", (client_id,))
+
+        conn.commit()
+        affected_rows = cursor.rowcount
+
+        return affected_rows
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
 def client_has_reservations(client_id):
     """Checks if a client has associated reservations."""
 
@@ -414,10 +413,8 @@ def client_has_reservations(client_id):
     try:
 
         reservation = conn.execute(
-            "SELECT id FROM reservations WHERE client_id = ? LIMIT 1",
-            (client_id,)
+            "SELECT id FROM reservations WHERE client_id = ? LIMIT 1", (client_id,)
         ).fetchone()
-
 
         return reservation is not None
     except Exception:
@@ -429,16 +426,13 @@ def client_has_reservations(client_id):
 
 # ----------------------------------------------------------------------------- PAYMENT METHODS ----------------------------------------------------------------
 
-def list_payment_methods():
 
+def list_payment_methods():
     """Returns all payment methods"""
 
     conn = connect()
     try:
-        payment_methods = conn.execute(
-            "SELECT * FROM payment_methods"
-        ).fetchall()
-
+        payment_methods = conn.execute("SELECT * FROM payment_methods").fetchall()
 
         return [dict(payment_method) for payment_method in payment_methods]
     except Exception:
@@ -449,15 +443,13 @@ def list_payment_methods():
 
 
 def find_payment_method(payment_method_id):
-
     """Returns a payment method by its ID."""
 
     conn = connect()
     try:
 
         payment_method = conn.execute(
-            "SELECT * FROM payment_methods WHERE id = ?",
-            (payment_method_id,)
+            "SELECT * FROM payment_methods WHERE id = ?", (payment_method_id,)
         ).fetchone()
 
         if payment_method:
@@ -472,15 +464,11 @@ def find_payment_method(payment_method_id):
 
 
 def create_payment_method(name):
-
     """Creates a new payment method"""
 
     conn = connect()
     try:
-        cursor = conn.execute(
-            "INSERT INTO payment_methods (name) VALUES (?)",
-            (name,)
-        )
+        cursor = conn.execute("INSERT INTO payment_methods (name) VALUES (?)", (name,))
 
         conn.commit()
         payment_method_id = cursor.lastrowid
@@ -494,14 +482,13 @@ def create_payment_method(name):
 
 
 def update_payment_method(payment_method_id, name):
-
     """Updates a payment method."""
 
     conn = connect()
     try:
         cursor = conn.execute(
             "UPDATE payment_methods SET name = ? WHERE id = ?",
-            (name, payment_method_id)
+            (name, payment_method_id),
         )
 
         conn.commit()
@@ -521,8 +508,7 @@ def delete_payment_method(payment_method_id):
     conn = connect()
     try:
         cursor = conn.execute(
-            "DELETE FROM payment_methods WHERE id = ?",
-            (payment_method_id,)
+            "DELETE FROM payment_methods WHERE id = ?", (payment_method_id,)
         )
 
         conn.commit()
@@ -535,6 +521,7 @@ def delete_payment_method(payment_method_id):
     finally:
         conn.close()
 
+
 def payment_method_has_reservations(payment_method_id):
     """Checks if a payment method has associated reservations."""
 
@@ -543,9 +530,8 @@ def payment_method_has_reservations(payment_method_id):
 
         reservation = conn.execute(
             "SELECT id FROM reservations WHERE payment_method_id = ? LIMIT 1",
-            (payment_method_id,)
+            (payment_method_id,),
         ).fetchone()
-
 
         return reservation is not None
     except Exception:
@@ -585,7 +571,6 @@ def list_reservations():
                 ON reservations.payment_method_id = payment_methods.id
         """).fetchall()
 
-
         return [dict(reservation) for reservation in reservations]
     except Exception:
         conn.rollback()
@@ -601,7 +586,8 @@ def get_reservation_details(reservation_id):
     conn = connect()
     try:
 
-        reservation = conn.execute("""
+        reservation = conn.execute(
+            """
             SELECT
                 reservations.id,
                 clients.name AS client,
@@ -621,8 +607,9 @@ def get_reservation_details(reservation_id):
             JOIN payment_methods
                 ON reservations.payment_method_id = payment_methods.id
             WHERE reservations.id = ?
-        """, (reservation_id,)).fetchone()
-
+        """,
+            (reservation_id,),
+        ).fetchone()
 
         if reservation:
             return dict(reservation)
@@ -636,15 +623,13 @@ def get_reservation_details(reservation_id):
 
 
 def find_reservation(reservations_id):
-
     """Returns a reservations by its ID."""
 
     conn = connect()
     try:
 
         reservations = conn.execute(
-            "SELECT * FROM reservations WHERE id = ?",
-            (reservations_id,)
+            "SELECT * FROM reservations WHERE id = ?", (reservations_id,)
         ).fetchone()
 
         if reservations:
@@ -658,53 +643,52 @@ def find_reservation(reservations_id):
         conn.close()
 
 
-def create_reservation(
-    client_id,
-    vehicle_id,
-    payment_method_id,
-    start_date,
-    end_date
-):
+def create_reservation(client_id, vehicle_id, payment_method_id, start_date, end_date):
     """Creates a new reservation."""
 
     client = find_client(client_id)
-    if not client: return {"error": "Client not found."}
+    if not client:
+        return {"error": "Client not found."}
 
     vehicle = find_vehicle(vehicle_id)
-    if not vehicle: return {"error": "Vehicle not found."}
+    if not vehicle:
+        return {"error": "Vehicle not found."}
 
     payment_method = find_payment_method(payment_method_id)
 
-    if not payment_method: return {"error": "Payment method not found."}
+    if not payment_method:
+        return {"error": "Payment method not found."}
 
     try:
         start = datetime.strptime(start_date, "%Y-%m-%d")
         end = datetime.strptime(end_date, "%Y-%m-%d")
 
-    except ValueError: return {"error": "Invalid date format. Use YYYY-MM-DD."}
+    except ValueError:
+        return {"error": "Invalid date format. Use YYYY-MM-DD."}
 
-    if end <= start: return {"error": "End date must be after start date."}
+    if end <= start:
+        return {"error": "End date must be after start date."}
 
     # Show days until the end of the rental
     rental_days = (end - start).days
 
     # Vehicle under maintenance can´t be rental
-    if vehicle["status"] == "maintenance":return {"error": "Vehicle is under maintenance."}
+    if vehicle["status"] == "maintenance":
+        return {"error": "Vehicle is under maintenance."}
 
     conn = connect()
     try:
 
-        existing_reservation = conn.execute("""
+        existing_reservation = conn.execute(
+            """
             SELECT * FROM reservations
             WHERE vehicle_id = ?
             AND status != 'cancelled'
             AND start_date < ?
             AND end_date > ?
-        """, (
-            vehicle_id,
-            end_date,
-            start_date
-        )).fetchone()
+        """,
+            (vehicle_id, end_date, start_date),
+        ).fetchone()
 
         if existing_reservation:
             return {"error": "Vehicle is already reserved for these dates."}
@@ -718,7 +702,8 @@ def create_reservation(
 
         created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        cursor = conn.execute("""
+        cursor = conn.execute(
+            """
             INSERT INTO reservations (
                 client_id,
                 vehicle_id,
@@ -731,32 +716,31 @@ def create_reservation(
                 created_at
             )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            client_id,
-            vehicle_id,
-            payment_method_id,
-            start_date,
-            end_date,
-            daily_price,
-            total_price,
-            status,
-            created_at
-        ))
+        """,
+            (
+                client_id,
+                vehicle_id,
+                payment_method_id,
+                start_date,
+                end_date,
+                daily_price,
+                total_price,
+                status,
+                created_at,
+            ),
+        )
 
         conn.commit()
 
         reservation_id = cursor.lastrowid
 
-
-        return {
-            "id": reservation_id,
-            "total_price": total_price
-        }
+        return {"id": reservation_id, "total_price": total_price}
     except Exception:
         conn.rollback()
         raise
     finally:
         conn.close()
+
 
 def delete_reservation(reservation_id):
     """Deletes a reservation and returns the number of affected rows."""
@@ -765,14 +749,12 @@ def delete_reservation(reservation_id):
     try:
 
         cursor = conn.execute(
-            "DELETE FROM reservations WHERE id = ?",
-            (reservation_id,)
+            "DELETE FROM reservations WHERE id = ?", (reservation_id,)
         )
 
         conn.commit()
 
         affected_rows = cursor.rowcount
-
 
         return affected_rows
     except Exception:
@@ -783,54 +765,53 @@ def delete_reservation(reservation_id):
 
 
 def update_reservation(
-    reservation_id,
-    client_id,
-    vehicle_id,
-    payment_method_id,
-    start_date,
-    end_date
+    reservation_id, client_id, vehicle_id, payment_method_id, start_date, end_date
 ):
     """Updates an existing reservation."""
 
     client = find_client(client_id)
 
-    if not client: return {"error": "Client not found."}
+    if not client:
+        return {"error": "Client not found."}
     vehicle = find_vehicle(vehicle_id)
 
-    if not vehicle: return {"error": "Vehicle not found."}
+    if not vehicle:
+        return {"error": "Vehicle not found."}
     payment_method = find_payment_method(payment_method_id)
 
-    if not payment_method: return {"error": "Payment method not found."}
+    if not payment_method:
+        return {"error": "Payment method not found."}
 
     try:
         start = datetime.strptime(start_date, "%Y-%m-%d")
         end = datetime.strptime(end_date, "%Y-%m-%d")
 
-    except ValueError: return {"error": "Invalid date format. Use YYYY-MM-DD."}
+    except ValueError:
+        return {"error": "Invalid date format. Use YYYY-MM-DD."}
 
-    if end <= start: return {"error": "End date must be after start date."}
+    if end <= start:
+        return {"error": "End date must be after start date."}
 
     rental_days = (end - start).days
 
-    if vehicle["status"] == "maintenance": return {"error": "Vehicle is under maintenance."}
+    if vehicle["status"] == "maintenance":
+        return {"error": "Vehicle is under maintenance."}
 
     conn = connect()
     try:
 
-        # id != ? -> Ignores the reservation being updated to avoid a conflict with itself 
-        existing_reservation = conn.execute("""
+        # id != ? -> Ignores the reservation being updated to avoid a conflict with itself
+        existing_reservation = conn.execute(
+            """
             SELECT * FROM reservations
             WHERE vehicle_id = ?
             AND id != ?
             AND status != 'cancelled'
             AND start_date < ?
             AND end_date > ?
-        """, (
-            vehicle_id,
-            reservation_id,
-            end_date,
-            start_date
-        )).fetchone()
+        """,
+            (vehicle_id, reservation_id, end_date, start_date),
+        ).fetchone()
 
         if existing_reservation:
             return {"error": "Vehicle is already reserved for these dates."}
@@ -839,7 +820,8 @@ def update_reservation(
 
         total_price = rental_days * daily_price
 
-        cursor = conn.execute("""
+        cursor = conn.execute(
+            """
             UPDATE reservations
             SET client_id = ?,
                 vehicle_id = ?,
@@ -849,26 +831,24 @@ def update_reservation(
                 daily_price = ?,
                 total_price = ?
             WHERE id = ?
-        """, (
-            client_id,
-            vehicle_id,
-            payment_method_id,
-            start_date,
-            end_date,
-            daily_price,
-            total_price,
-            reservation_id
-        ))
+        """,
+            (
+                client_id,
+                vehicle_id,
+                payment_method_id,
+                start_date,
+                end_date,
+                daily_price,
+                total_price,
+                reservation_id,
+            ),
+        )
 
         conn.commit()
 
         affected_rows = cursor.rowcount
 
-
-        return {
-            "affected_rows": affected_rows,
-            "total_price": total_price
-        }
+        return {"affected_rows": affected_rows, "total_price": total_price}
     except Exception:
         conn.rollback()
         raise
@@ -878,15 +858,16 @@ def update_reservation(
 
 # ----------------------------------------------------------------------------- DASHBOARD ----------------------------------------------------------------
 
-def get_rented_vehicles():
 
+def get_rented_vehicles():
     """Returns currently rented vehicles and their remaining rental days."""
 
     conn = connect()
     try:
         today = datetime.now().strftime("%Y-%m-%d")
 
-        reservations = conn.execute("""
+        reservations = conn.execute(
+            """
             SELECT
                 vehicles.brand || ' ' || vehicles.model AS vehicle,
                 clients.name AS client,
@@ -900,20 +881,17 @@ def get_rented_vehicles():
             WHERE reservations.status != 'cancelled'
             AND reservations.start_date <= ?
             AND reservations.end_date >= ?
-        """, (today, today)).fetchall()
+        """,
+            (today, today),
+        ).fetchall()
 
         rented_vehicles = []
 
         for reservation in reservations:
 
-            end_date = datetime.strptime(
-                reservation["end_date"],
-            "%Y-%m-%d"
-        )
+            end_date = datetime.strptime(reservation["end_date"], "%Y-%m-%d")
 
-            remaining_days = (
-                end_date - datetime.strptime(today, "%Y-%m-%d")
-            ).days
+            remaining_days = (end_date - datetime.strptime(today, "%Y-%m-%d")).days
 
             vehicle = dict(reservation)
             vehicle["remaining_days"] = remaining_days
@@ -929,7 +907,6 @@ def get_rented_vehicles():
 
 
 def get_latest_clients():
-
     """Returns the latest registered clients."""
 
     conn = connect()
@@ -947,7 +924,6 @@ def get_latest_clients():
             LIMIT 5
         """).fetchall()
 
-
         return [dict(client) for client in clients]
     except Exception:
         conn.rollback()
@@ -956,9 +932,7 @@ def get_latest_clients():
         conn.close()
 
 
-
 def get_available_vehicles_by_category():
-
     """Returns available vehicles grouped by category and type."""
 
     conn = connect()
@@ -975,7 +949,6 @@ def get_available_vehicles_by_category():
             ORDER BY category, vehicle_type
         """).fetchall()
 
-
         return [dict(vehicle) for vehicle in vehicles]
     except Exception:
         conn.rollback()
@@ -984,24 +957,24 @@ def get_available_vehicles_by_category():
         conn.close()
 
 
-
 def get_monthly_reservations_summary():
-
     """Returns the number of reservations and total revenue for the current month."""
 
     conn = connect()
     try:
         current_month = datetime.now().strftime("%Y-%m")
 
-        summary = conn.execute("""
+        summary = conn.execute(
+            """
             SELECT
                 COUNT(*) AS total_reservations,
                 COALESCE(SUM(total_price), 0) AS total_revenue
             FROM reservations
             WHERE start_date LIKE ?
             AND status != 'cancelled'
-        """, (current_month + "%",)).fetchone()
-
+        """,
+            (current_month + "%",),
+        ).fetchone()
 
         return dict(summary)
     except Exception:
@@ -1011,19 +984,16 @@ def get_monthly_reservations_summary():
         conn.close()
 
 
-
 def get_upcoming_revisions():
-
     """Returns vehicles with revisions due within the next 5 days."""
 
     conn = connect()
     try:
         today = datetime.now().strftime("%Y-%m-%d")
-        limit_date = (
-            datetime.now() + timedelta(days=5)
-        ).strftime("%Y-%m-%d")
+        limit_date = (datetime.now() + timedelta(days=5)).strftime("%Y-%m-%d")
 
-        vehicles = conn.execute("""
+        vehicles = conn.execute(
+            """
             SELECT
                 id,
                 brand,
@@ -1033,8 +1003,9 @@ def get_upcoming_revisions():
             FROM vehicles
             WHERE next_revision_date BETWEEN ? AND ?
             ORDER BY next_revision_date
-        """, (today, limit_date)).fetchall()
-
+        """,
+            (today, limit_date),
+        ).fetchall()
 
         return [dict(vehicle) for vehicle in vehicles]
     except Exception:
@@ -1044,19 +1015,16 @@ def get_upcoming_revisions():
         conn.close()
 
 
-
 def get_upcoming_inspections():
-
     """Returns vehicles with inspections due within the next 15 days."""
 
     conn = connect()
     try:
         today = datetime.now().strftime("%Y-%m-%d")
-        limit_date = (
-            datetime.now() + timedelta(days=15)
-        ).strftime("%Y-%m-%d")
+        limit_date = (datetime.now() + timedelta(days=15)).strftime("%Y-%m-%d")
 
-        vehicles = conn.execute("""
+        vehicles = conn.execute(
+            """
             SELECT
                 id,
                 brand,
@@ -1066,8 +1034,9 @@ def get_upcoming_inspections():
             FROM vehicles
             WHERE next_inspection_date BETWEEN ? AND ?
             ORDER BY next_inspection_date
-        """, (today, limit_date)).fetchall()
-
+        """,
+            (today, limit_date),
+        ).fetchall()
 
         return [dict(vehicle) for vehicle in vehicles]
     except Exception:
@@ -1078,17 +1047,15 @@ def get_upcoming_inspections():
 
 
 def get_revision_alerts():
-
     """Returns vehicles with revisions due within the next 5 days."""
 
     conn = connect()
     try:
         today = datetime.now().strftime("%Y-%m-%d")
-        alert_date = (
-            datetime.now() + timedelta(days=5)
-        ).strftime("%Y-%m-%d")
+        alert_date = (datetime.now() + timedelta(days=5)).strftime("%Y-%m-%d")
 
-        vehicles = conn.execute("""
+        vehicles = conn.execute(
+            """
             SELECT
                 id,
                 brand,
@@ -1098,8 +1065,9 @@ def get_revision_alerts():
             FROM vehicles
             WHERE next_revision_date BETWEEN ? AND ?
             ORDER BY next_revision_date
-        """, (today, alert_date)).fetchall()
-
+        """,
+            (today, alert_date),
+        ).fetchall()
 
         return [dict(vehicle) for vehicle in vehicles]
     except Exception:
@@ -1107,6 +1075,7 @@ def get_revision_alerts():
         raise
     finally:
         conn.close()
+
 
 if __name__ == "__main__":
 

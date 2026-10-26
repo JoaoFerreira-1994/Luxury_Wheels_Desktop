@@ -3,13 +3,11 @@ from werkzeug.security import generate_password_hash
 
 DATABASE = "luxury_wheels.db"
 
+
 def connect():
     """Creates and configures a SQLite database connection."""
 
-    conn = sqlite3.connect(
-        DATABASE,
-        timeout=10
-    )
+    conn = sqlite3.connect(DATABASE, timeout=10)
 
     conn.row_factory = sqlite3.Row
 
@@ -20,8 +18,7 @@ def connect():
 
 
 def create_tables():
-
-    """ Creates database table """
+    """Creates database table"""
 
     conn = connect()
     cursor = conn.cursor()
@@ -112,16 +109,12 @@ def create_tables():
 
 
 def create_admin():
-    
     """Creates the default administrator if it does not exist."""
 
     conn = connect()
     cursor = conn.cursor()
 
-    cursor.execute(
-        "SELECT id FROM users WHERE email = ?",
-        ("admin@luxurywheels.com",)
-    )
+    cursor.execute("SELECT id FROM users WHERE email = ?", ("admin@luxurywheels.com",))
 
     admin = cursor.fetchone()
 
@@ -129,15 +122,13 @@ def create_admin():
 
         password_hash = generate_password_hash("Luxury123")
 
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO users (name, email, password, role)
             VALUES (?, ?, ?, ?)
-        """, (
-            "Administrator",
-            "admin@luxurywheels.com",
-            password_hash,
-            "admin"
-        ))
+        """,
+            ("Administrator", "admin@luxurywheels.com", password_hash, "admin"),
+        )
 
         conn.commit()
 
@@ -167,7 +158,6 @@ def show_tables():
         print(table["name"])
 
     conn.close()
-
 
 
 if __name__ == "__main__":

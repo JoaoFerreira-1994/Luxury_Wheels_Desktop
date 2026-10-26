@@ -1,4 +1,3 @@
-
 import customtkinter as ctk
 from models import authenticate_user
 from PIL import Image
@@ -17,7 +16,7 @@ from models import (
     get_available_vehicles_by_category,
     get_upcoming_revisions,
     get_upcoming_inspections,
-    get_revision_alerts
+    get_revision_alerts,
 )
 
 ctk.set_appearance_mode("dark")
@@ -42,9 +41,7 @@ def login():
     if user:
         show_dashboard(user)
     else:
-        error_label.configure(
-            text="Invalid email or password."
-        )
+        error_label.configure(text="Invalid email or password.")
 
 
 def show_login():
@@ -54,56 +51,32 @@ def show_login():
 
     clear_window()
 
-    login_frame = ctk.CTkFrame(
-        app,
-        width=400,
-        height=420
-    )
+    login_frame = ctk.CTkFrame(app, width=400, height=420)
     login_frame.pack(expand=True)
     login_frame.pack_propagate(False)
 
     title_label = ctk.CTkLabel(
-        login_frame,
-        text="Luxury Wheels",
-        font=ctk.CTkFont(size=30, weight="bold")
+        login_frame, text="Luxury Wheels", font=ctk.CTkFont(size=30, weight="bold")
     )
     title_label.pack(pady=(40, 10))
 
     subtitle_label = ctk.CTkLabel(
-        login_frame,
-        text="Car Rental Management System",
-        font=ctk.CTkFont(size=14)
+        login_frame, text="Car Rental Management System", font=ctk.CTkFont(size=14)
     )
     subtitle_label.pack(pady=(0, 30))
 
-    email_entry = ctk.CTkEntry(
-        login_frame,
-        width=300,
-        placeholder_text="Email"
-    )
+    email_entry = ctk.CTkEntry(login_frame, width=300, placeholder_text="Email")
     email_entry.pack(pady=10)
 
     password_entry = ctk.CTkEntry(
-        login_frame,
-        width=300,
-        placeholder_text="Password",
-        show="*"
+        login_frame, width=300, placeholder_text="Password", show="*"
     )
     password_entry.pack(pady=10)
 
-    login_button = ctk.CTkButton(
-        login_frame,
-        text="Login",
-        width=300,
-        command=login
-    )
+    login_button = ctk.CTkButton(login_frame, text="Login", width=300, command=login)
     login_button.pack(pady=20)
 
-    error_label = ctk.CTkLabel(
-        login_frame,
-        text="",
-        text_color="red"
-    )
+    error_label = ctk.CTkLabel(login_frame, text="", text_color="red")
     error_label.pack()
 
 
@@ -125,23 +98,19 @@ def show_dashboard_content(user):
     muted = "#AFAFAF"
 
     dashboard = ctk.CTkScrollableFrame(
-        content_frame,
-        fg_color="transparent",
-        corner_radius=0
+        content_frame, fg_color="transparent", corner_radius=0
     )
     dashboard.pack(fill="both", expand=True, padx=25, pady=20)
 
     ctk.CTkLabel(
-        dashboard,
-        text="Dashboard",
-        font=ctk.CTkFont(size=28, weight="bold")
+        dashboard, text="Dashboard", font=ctk.CTkFont(size=28, weight="bold")
     ).pack(anchor="w")
 
     ctk.CTkLabel(
         dashboard,
         text=f"Welcome, {user['name']}!",
         font=ctk.CTkFont(size=13),
-        text_color=muted
+        text_color=muted,
     ).pack(anchor="w", pady=(3, 18))
 
     summary_frame = ctk.CTkFrame(dashboard, fg_color="transparent")
@@ -150,45 +119,29 @@ def show_dashboard_content(user):
 
     cards = [
         ("Monthly Reservations", str(summary["total_reservations"] or 0)),
-        ("Monthly Revenue", f"{float(summary['total_revenue'] or 0):.2f} €")
+        ("Monthly Revenue", f"{float(summary['total_revenue'] or 0):.2f} €"),
     ]
 
     for column, (label, value) in enumerate(cards):
-        card = ctk.CTkFrame(
-            summary_frame,
-            fg_color=card_color,
-            corner_radius=10
-        )
+        card = ctk.CTkFrame(summary_frame, fg_color=card_color, corner_radius=10)
         card.grid(row=0, column=column, sticky="ew", padx=5, pady=5)
 
         ctk.CTkLabel(
-            card,
-            text=label,
-            text_color=muted,
-            font=ctk.CTkFont(size=13)
+            card, text=label, text_color=muted, font=ctk.CTkFont(size=13)
         ).pack(pady=(18, 7))
 
         ctk.CTkLabel(
-            card,
-            text=value,
-            text_color=gold,
-            font=ctk.CTkFont(size=28, weight="bold")
+            card, text=value, text_color=gold, font=ctk.CTkFont(size=28, weight="bold")
         ).pack(pady=(0, 18))
 
     def add_section(title, columns, rows):
         """Displays a section with a centered header and data grid."""
 
         ctk.CTkLabel(
-            dashboard,
-            text=title,
-            font=ctk.CTkFont(size=18, weight="bold")
+            dashboard, text=title, font=ctk.CTkFont(size=18, weight="bold")
         ).pack(anchor="w", pady=(20, 10))
 
-        container = ctk.CTkFrame(
-            dashboard,
-            fg_color=card_color,
-            corner_radius=10
-        )
+        container = ctk.CTkFrame(dashboard, fg_color=card_color, corner_radius=10)
         container.pack(fill="x")
 
         table = ctk.CTkFrame(container, fg_color="transparent")
@@ -204,21 +157,12 @@ def show_dashboard_content(user):
                 corner_radius=5,
                 font=ctk.CTkFont(size=12, weight="bold"),
                 anchor="center",
-                height=38
-            ).grid(
-                row=0,
-                column=column_index,
-                sticky="ew",
-                padx=2,
-                pady=(0, 5)
-            )
+                height=38,
+            ).grid(row=0, column=column_index, sticky="ew", padx=2, pady=(0, 5))
 
         if not rows:
             ctk.CTkLabel(
-                table,
-                text="No records found.",
-                text_color=muted,
-                height=40
+                table, text="No records found.", text_color=muted, height=40
             ).grid(row=1, column=0, columnspan=len(columns), sticky="ew")
             return
 
@@ -230,14 +174,8 @@ def show_dashboard_content(user):
                     font=ctk.CTkFont(size=12),
                     anchor="center",
                     height=34,
-                    wraplength=155
-                ).grid(
-                    row=row_index,
-                    column=column_index,
-                    sticky="ew",
-                    padx=3,
-                    pady=2
-                )
+                    wraplength=155,
+                ).grid(row=row_index, column=column_index, sticky="ew", padx=3, pady=2)
 
     add_section(
         "Rented Vehicles",
@@ -248,10 +186,10 @@ def show_dashboard_content(user):
                 vehicle["client"],
                 vehicle["start_date"],
                 vehicle["end_date"],
-                vehicle["remaining_days"]
+                vehicle["remaining_days"],
             )
             for vehicle in rented_vehicles
-        ]
+        ],
     )
 
     # All reservations, including future and completed bookings.
@@ -265,37 +203,28 @@ def show_dashboard_content(user):
                 reservation.get("start_date", ""),
                 reservation.get("end_date", ""),
                 f"{float(reservation.get('total_price') or 0):.2f} €",
-                str(reservation.get("status") or "").capitalize()
+                str(reservation.get("status") or "").capitalize(),
             )
             for reservation in reservations
-        ]
+        ],
     )
 
     add_section(
         "Latest Clients",
         ["Name", "Email", "Phone", "Registration Date"],
         [
-            (
-                client["name"],
-                client["email"],
-                client["phone"],
-                client["created_at"]
-            )
+            (client["name"], client["email"], client["phone"], client["created_at"])
             for client in latest_clients
-        ]
+        ],
     )
 
     add_section(
         "Available Vehicles by Category and Type",
         ["Category", "Type", "Available"],
         [
-            (
-                vehicle["category"],
-                vehicle["vehicle_type"],
-                vehicle["total"]
-            )
+            (vehicle["category"], vehicle["vehicle_type"], vehicle["total"])
             for vehicle in available_vehicles
-        ]
+        ],
     )
 
     add_section(
@@ -305,10 +234,10 @@ def show_dashboard_content(user):
             (
                 f"{vehicle['brand']} {vehicle['model']}",
                 vehicle["license_plate"],
-                vehicle["next_revision_date"]
+                vehicle["next_revision_date"],
             )
             for vehicle in upcoming_revisions
-        ]
+        ],
     )
 
     add_section(
@@ -318,10 +247,10 @@ def show_dashboard_content(user):
             (
                 f"{vehicle['brand']} {vehicle['model']}",
                 vehicle["license_plate"],
-                vehicle["next_inspection_date"]
+                vehicle["next_inspection_date"],
             )
             for vehicle in upcoming_inspections
-        ]
+        ],
     )
 
     if revision_alerts:
@@ -329,14 +258,10 @@ def show_dashboard_content(user):
             dashboard,
             text="Revision Alerts",
             font=ctk.CTkFont(size=18, weight="bold"),
-            text_color=gold
+            text_color=gold,
         ).pack(anchor="w", pady=(22, 10))
 
-        alert_frame = ctk.CTkFrame(
-            dashboard,
-            fg_color="#393125",
-            corner_radius=10
-        )
+        alert_frame = ctk.CTkFrame(dashboard, fg_color="#393125", corner_radius=10)
         alert_frame.pack(fill="x", pady=(0, 15))
 
         for vehicle in revision_alerts:
@@ -348,9 +273,8 @@ def show_dashboard_content(user):
                     f"{vehicle['next_revision_date']}"
                 ),
                 anchor="w",
-                font=ctk.CTkFont(size=12)
+                font=ctk.CTkFont(size=12),
             ).pack(fill="x", padx=15, pady=8)
-
 
 
 def show_page(page_name, user):
@@ -376,18 +300,12 @@ def show_page(page_name, user):
 
     else:
         ctk.CTkLabel(
-            content_frame,
-            text=page_name,
-            font=ctk.CTkFont(size=28, weight="bold")
+            content_frame, text=page_name, font=ctk.CTkFont(size=28, weight="bold")
         ).pack(anchor="w", padx=30, pady=(30, 10))
 
         ctk.CTkLabel(
-            content_frame,
-            text=f"{page_name} management",
-            font=ctk.CTkFont(size=16)
+            content_frame, text=f"{page_name} management", font=ctk.CTkFont(size=16)
         ).pack(anchor="w", padx=30)
-
-
 
 
 def show_dashboard(user):
@@ -397,11 +315,7 @@ def show_dashboard(user):
 
     clear_window()
 
-    sidebar = ctk.CTkFrame(
-        app,
-        width=230,
-        corner_radius=0
-    )
+    sidebar = ctk.CTkFrame(app, width=230, corner_radius=0)
     sidebar.pack(side="left", fill="y")
     sidebar.pack_propagate(False)
 
@@ -413,27 +327,17 @@ def show_dashboard(user):
         logo_image.thumbnail((180, 100))
 
         logo = ctk.CTkImage(
-            light_image=logo_image,
-            dark_image=logo_image,
-            size=logo_image.size
+            light_image=logo_image, dark_image=logo_image, size=logo_image.size
         )
         logo_label = ctk.CTkLabel(sidebar, text="", image=logo)
     except (FileNotFoundError, OSError):
         logo_label = ctk.CTkLabel(
-            sidebar,
-            text="Luxury Wheels",
-            font=ctk.CTkFont(size=22, weight="bold")
+            sidebar, text="Luxury Wheels", font=ctk.CTkFont(size=22, weight="bold")
         )
 
     logo_label.pack(pady=(25, 30))
 
-    pages = [
-        "Dashboard",
-        "Vehicles",
-        "Clients",
-        "Reservations",
-        "Payment Methods"
-    ]
+    pages = ["Dashboard", "Vehicles", "Clients", "Reservations", "Payment Methods"]
 
     for page in pages:
 
@@ -443,7 +347,7 @@ def show_dashboard(user):
             width=190,
             height=40,
             anchor="w",
-            command=lambda p=page: show_page(p, user)
+            command=lambda p=page: show_page(p, user),
         )
         button.pack(pady=8, padx=20)
 
@@ -454,20 +358,12 @@ def show_dashboard(user):
         height=40,
         fg_color="#A83232",
         hover_color="#842626",
-        command=show_login
+        command=show_login,
     )
     logout_button.pack(side="bottom", pady=30)
 
-    content_frame = ctk.CTkFrame(
-        app,
-        corner_radius=0,
-        fg_color="transparent"
-    )
-    content_frame.pack(
-        side="right",
-        fill="both",
-        expand=True
-    )
+    content_frame = ctk.CTkFrame(app, corner_radius=0, fg_color="transparent")
+    content_frame.pack(side="right", fill="both", expand=True)
 
     show_page("Dashboard", user)
 

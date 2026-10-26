@@ -1,4 +1,3 @@
-
 from tkinter import ttk
 
 GOLD = "#C9A34E"
@@ -23,7 +22,7 @@ def configure_table_style():
         borderwidth=0,
         relief="flat",
         rowheight=42,
-        font=("Segoe UI", 10)
+        font=("Segoe UI", 10),
     )
 
     style.configure(
@@ -33,16 +32,13 @@ def configure_table_style():
         borderwidth=0,
         relief="flat",
         padding=(12, 12),
-        font=("Segoe UI", 10, "bold")
+        font=("Segoe UI", 10, "bold"),
     )
 
     style.map(
         "Luxury.Treeview",
         background=[("selected", "#62502B")],
-        foreground=[("selected", "#FFFFFF")]
+        foreground=[("selected", "#FFFFFF")],
     )
 
-    style.map(
-        "Luxury.Treeview.Heading",
-        background=[("active", "#414141")]
-    )
+    style.map("Luxury.Treeview.Heading", background=[("active", "#414141")])

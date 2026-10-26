@@ -1,4 +1,3 @@
-
 import unittest
 import sqlite3
 
@@ -21,12 +20,15 @@ class TestReservationOverlap(unittest.TestCase):
             )
         """)
 
-        self.conn.execute("""
+        self.conn.execute(
+            """
             INSERT INTO reservations (
                 vehicle_id, start_date, end_date, status
             )
             VALUES (?, ?, ?, ?)
-        """, (1, "2026-10-10", "2026-10-15", "confirmed"))
+        """,
+            (1, "2026-10-10", "2026-10-15", "confirmed"),
+        )
 
         self.conn.commit()
 
@@ -37,33 +39,28 @@ class TestReservationOverlap(unittest.TestCase):
     def has_overlap(self, vehicle_id, start_date, end_date):
         """Checks overlapping reservations using the application SQL."""
 
-        result = self.conn.execute("""
+        result = self.conn.execute(
+            """
             SELECT * FROM reservations
             WHERE vehicle_id = ?
             AND status != 'cancelled'
             AND start_date < ?
             AND end_date > ?
-        """, (
-            vehicle_id,
-            end_date,
-            start_date
-        )).fetchone()
+        """,
+            (vehicle_id, end_date, start_date),
+        ).fetchone()
 
         return result is not None
 
     def test_overlapping_dates(self):
         """Tests overlapping reservation dates."""
 
-        self.assertTrue(
-            self.has_overlap(1, "2026-10-12", "2026-10-17")
-        )
+        self.assertTrue(self.has_overlap(1, "2026-10-12", "2026-10-17"))
 
     def test_adjacent_dates(self):
         """Tests reservations with adjacent dates."""
 
-        self.assertFalse(
-            self.has_overlap(1, "2026-10-15", "2026-10-20")
-        )
+        self.assertFalse(self.has_overlap(1, "2026-10-15", "2026-10-20"))
 
     def test_cancelled_reservation(self):
         """Tests that cancelled reservations do not block dates."""
@@ -76,9 +73,7 @@ class TestReservationOverlap(unittest.TestCase):
 
         self.conn.commit()
 
-        self.assertFalse(
-            self.has_overlap(1, "2026-10-12", "2026-10-17")
-        )
+        self.assertFalse(self.has_overlap(1, "2026-10-12", "2026-10-17"))
 
 
 if __name__ == "__main__":
